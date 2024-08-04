@@ -21,6 +21,8 @@ class AuthorSerializer(serializers.ModelSerializer):
         if 'first_name' in data and 'last_name' in data:
             if data['first_name'] == data['last_name']:
                 raise serializers.ValidationError("First name and last name cannot be the same.")
+        if 'date_of_birth' in data and data['date_of_birth'] > datetime.date.today():
+            raise serializers.ValidationError("Date of birth cannot be in the future.")
         if self.instance is None:
             if Author.objects.filter(first_name=data['first_name'], last_name=data['last_name'], date_of_birth=data['date_of_birth']).exists():
                  raise serializers.ValidationError("An author with this first name, last name and DOB already exists.")
@@ -41,6 +43,8 @@ class BookSerializer(serializers.ModelSerializer):
         return value
 
     def validate(self, data):
+        if not data.get('authors'):
+            raise serializers.ValidationError({'author': 'This field is required.'})
         if 'publish_date' in data and data['publish_date'] > datetime.date.today():
             raise serializers.ValidationError("Publish date cannot be in the future.")
         if self.instance is None:

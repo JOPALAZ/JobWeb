@@ -16,16 +16,31 @@ class CustomPagination(PageNumberPagination):
 
 
 class BookFilter(django_filters.FilterSet):
-    printed = django_filters.DateFilter(field_name='publish_date', lookup_expr='lte')
-    title = django_filters.CharFilter(field_name='title', lookup_expr='icontains')
+    printed__lte = django_filters.DateFilter(field_name='publish_date', lookup_expr='lte')
+    title__contains = django_filters.CharFilter(field_name='title', lookup_expr='icontains')
 
     class Meta:
         model = Book
-        fields = ['printed', 'title']
+        fields = ['printed__lte', 'title__contains']
+
+class AuthorFilter(django_filters.FilterSet):
+    name__contains = django_filters.CharFilter(field_name='first_name', lookup_expr='icontains')
+    surname__contains = django_filters.CharFilter(field_name='last_name', lookup_expr='icontains')
+    birth__lte = django_filters.DateFilter(field_name='date_of_birth', lookup_expr='lte')
+    class Meta:
+        model = Author
+        fields = ['name__contains', 'surname__contains', 'birth__lte']
+
 
 class AuthorViewSet(viewsets.ModelViewSet):
     queryset = Author.objects.all()
     serializer_class = AuthorSerializer
+    filter_backends = (django_filters.DjangoFilterBackend, filters.SearchFilter)
+    filterset_class = AuthorFilter
+    search_fields=['first_name', 'last_name']
+    pagination_class = CustomPagination
+    permission_classes = [IsAuthenticatedOrReadOnly]
+
 
     def create(self, request, *args, **kwargs):
         try:

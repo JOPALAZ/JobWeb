@@ -4,3 +4,38 @@
 *.pyc
 *.log
 bin/
+# Node modules
+node_modules/
+
+# Build output
+dist/
+build/
+
+# Quasar dev and production logs
+*.log
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Environment files
+.env
+.env.*
+
+# IDE/Editor specific files
+.vscode/
+.idea/
+
+# MacOS Finder
+.AppleDouble
+.LSOverride
+
+# Windows system files
+ehthumbs.db
+Desktop.ini
+
+# npm package-lock
+package-lock.json
+
+# Yarn lock file (if you use Yarn instead of npm)
+yarn.lock
