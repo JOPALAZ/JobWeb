@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web:
+    build:
+      context: ./library_management
+    container_name: django_app
+    command: gunicorn library_management.wsgi:application --bind 0.0.0.0:8000
+    volumes:
+      - ./library_management:/app
+    ports:
+      - "8000:8000"
+
+  frontend:
+    build:
+      context: ./Quasar-proj
+    container_name: quasar_app
+    volumes:
+      - ./Quasar-proj:/app
+    ports:
+      - "8080:8080"

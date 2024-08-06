@@ -1,0 +1,24 @@
+# Dockerfile for Quasar application
+FROM node:14
+
+# Set working directory
+WORKDIR /app
+
+# Copy package.json and install dependencies
+COPY Quasar-proj/package*.json ./
+RUN npm install
+
+# Copy the rest of the files
+COPY Quasar-proj /app
+
+# Build the Quasar project
+RUN npm run build
+
+# Install server to serve the built frontend
+RUN npm install -g http-server
+
+# Expose port 8080
+EXPOSE 8080
+
+# Command to start the server to serve the frontend
+CMD ["http-server", "dist/spa", "-p", "8080"]
