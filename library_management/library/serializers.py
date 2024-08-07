@@ -26,6 +26,10 @@ class AuthorSerializer(serializers.ModelSerializer):
         if self.instance is None:
             if Author.objects.filter(first_name=data['first_name'], last_name=data['last_name'], date_of_birth=data['date_of_birth']).exists():
                  raise serializers.ValidationError("An author with this first name, last name and DOB already exists.")
+        else:
+            same = Author.objects.filter(first_name=data['first_name'], last_name=data['last_name'], date_of_birth=data['date_of_birth'])
+            if (len(same) > 1 or (len(same) == 1 and not same.contains(self.instance))):
+                raise serializers.ValidationError("An author with this first name, last name and DOB already exists.")
         if self.instance is not None and 'date_of_birth' in data:  # This check is for update scenario
             books = self.instance.books.all()
             for book in books:
@@ -64,8 +68,10 @@ class BookSerializer(serializers.ModelSerializer):
             if Book.objects.filter( isbn=data['isbn']).exists():
                 raise serializers.ValidationError("This ISNB exists")
         else:
-            same =  Book.objects.filter( isbn=data['isbn'])
-            print(f'{same} {same.contains(self.instance)}')
+            same = Book.objects.filter(title=data['title'],publish_date=data['publish_date'])
             if (len(same) > 1 or (len(same) == 1 and not same.contains(self.instance))):
+                raise serializers.ValidationError("This book exists")
+            sameISBN =  Book.objects.filter( isbn=data['isbn'])
+            if (len(sameISBN) > 1 or (len(sameISBN) == 1 and not sameISBN.contains(self.instance))):
                 raise serializers.ValidationError("This ISNB exists")
         return data
