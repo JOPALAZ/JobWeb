@@ -546,7 +546,7 @@ export default {
             errorMessages = error.response.data['error'] ? error.response.data['error'] : 'You have to log in to do it.';
           }
           Notify.create({
-            message: 'Error updating and author!' +  (` ${errorMessages}`),
+            message: 'Error updating an author!' +  (` ${errorMessages}`),
             color: 'negative',
             position: 'top'
           });         
@@ -592,6 +592,10 @@ export default {
         const name = this.getAuthorName(element);
         out += name;
         out += ', ';
+      }
+      if(out.length>1)
+      {
+        out = out.substring(0,out.length-2);
       }
       return out;
     },
