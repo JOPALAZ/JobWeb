@@ -232,7 +232,7 @@ export default {
           name: 'authors',
           label: 'Author(s)',
           align: 'left',
-          field: row => row.authors.map(a => this.getAuthorName(a)).join(', ')
+          field: row => this.getAuthors(row.authors)
         },
         { name: 'publish_date', label: 'Publication Date', align: 'left', field: row => row.publish_date },
         { name: 'isbn', label: 'ISBN', align: 'left', field: row => row.isbn },
@@ -586,9 +586,31 @@ export default {
         }
       }
     },
+    getAuthors(authorIDs) { //this has to be synchronous because the authors cannot be received from the fetched ones as some of them may be on the other page and thus wont be present in fetched which will result in blanks in table.
+      let out = '';
+      for (const element of authorIDs) {
+        const name = this.getAuthorName(element);
+        out += name;
+        out += ', ';
+      }
+      return out;
+    },
+
     getAuthorName(authorId) {
-      const author = this.authorsOptions.find(a => a.value === authorId);
-      return author ? author.name : '';
+      try {
+        const xhr = new XMLHttpRequest();
+        xhr.open("GET", `/api/authors/${authorId}/`, false);
+        xhr.send(null);
+
+        if (xhr.status === 200) {
+          const response = JSON.parse(xhr.responseText);
+          return `${response['first_name']} ${response['last_name']}`;
+        } else {
+          return '';
+        }
+      } catch {
+        return '';
+      }
     }
   },
   watch: {
