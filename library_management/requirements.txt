@@ -1,2 +1,5 @@
 Django==4.2
 djangorestframework
+gunicorn
+django_filter
+django-cors-headers

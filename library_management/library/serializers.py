@@ -26,6 +26,11 @@ class AuthorSerializer(serializers.ModelSerializer):
         if self.instance is None:
             if Author.objects.filter(first_name=data['first_name'], last_name=data['last_name'], date_of_birth=data['date_of_birth']).exists():
                  raise serializers.ValidationError("An author with this first name, last name and DOB already exists.")
+        if self.instance is not None and 'date_of_birth' in data:  # This check is for update scenario
+            books = self.instance.books.all()
+            for book in books:
+                if book.publish_date < data['date_of_birth']:
+                    raise serializers.ValidationError(f"Book '{book.title}' was published before the author was born.")
         return data
 
 class BookSerializer(serializers.ModelSerializer):
@@ -47,7 +52,20 @@ class BookSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'author': 'This field is required.'})
         if 'publish_date' in data and data['publish_date'] > datetime.date.today():
             raise serializers.ValidationError("Publish date cannot be in the future.")
+        authors = data.get('authors', [])
+        if authors:
+            for author in authors:
+                print( author.date_of_birth)
+                if data['publish_date'] < author.date_of_birth:
+                    raise serializers.ValidationError(f"Publication date cannot be earlier than the birth date of author {author.first_name} {author.last_name}.")
         if self.instance is None:
-            if Book.objects.filter(title=data['title'], isbn=data['isbn'], publish_date=data['publish_date']).exists():
+            if Book.objects.filter(title=data['title'],publish_date=data['publish_date']).exists():
                 raise serializers.ValidationError("This book exists")
+            if Book.objects.filter( isbn=data['isbn']).exists():
+                raise serializers.ValidationError("This ISNB exists")
+        else:
+            same =  Book.objects.filter( isbn=data['isbn'])
+            print(f'{same} {same.contains(self.instance)}')
+            if (len(same) > 1 or (len(same) == 1 and not same.contains(self.instance))):
+                raise serializers.ValidationError("This ISNB exists")
         return data

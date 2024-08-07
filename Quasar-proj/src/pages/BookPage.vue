@@ -219,7 +219,6 @@
 
 <script>
 import { Notify } from 'quasar';
-import axios from 'axios';
 
 export default {
   data() {
@@ -279,7 +278,7 @@ export default {
   methods: {
     async fetchBooks() {
       try {
-        const response = await axios.get('http://localhost:8000/api/books/', {
+        const response = await this.$axios.get('/api/books/', {
           params: {
             page: this.paginationBooks.page,
             page_size: this.paginationBooks.rowsPerPage,
@@ -313,7 +312,7 @@ export default {
     },
     async fetchAuthors() {
       try {
-        const response = await axios.get('http://localhost:8000/api/authors/',
+        const response = await this.$axios.get('/api/authors/',
           {
             params: {
               page: this.paginationAuthors.page,
@@ -372,7 +371,7 @@ export default {
     async addBook() {
       try {
         const token = localStorage.getItem('token');
-        await axios.post('http://localhost:8000/api/books/', this.newBook, {
+        await this.$axios.post('/api/books/', this.newBook, {
           headers: {
             Authorization: `Token ${token}`
           }});
@@ -410,7 +409,7 @@ export default {
     async updateBook() {
       try {
         const token = localStorage.getItem('token');
-        await axios.put(`http://localhost:8000/api/books/${this.currentBook.id}/`, this.currentBook, {
+        await this.$axios.put(`/api/books/${this.currentBook.id}/`, this.currentBook, {
           headers: {
             Authorization: `Token ${token}`
           }});
@@ -444,7 +443,7 @@ export default {
     async deleteBook(bookId) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:8000/api/books/${bookId}/`, {
+        await this.$axios.delete(`/api/books/${bookId}/`, {
           headers: {
             Authorization: `Token ${token}`
           }});
@@ -485,7 +484,7 @@ export default {
     async addAuthor() {
       try {
         const token = localStorage.getItem('token');
-        await axios.post('http://localhost:8000/api/authors/', this.newAuthor, {
+        await this.$axios.post('/api/authors/', this.newAuthor, {
           headers: {
             Authorization: `Token ${token}`
           }});
@@ -523,7 +522,7 @@ export default {
     async updateAuthor() {
       try {
         const token = localStorage.getItem('token');
-        await axios.put(`http://localhost:8000/api/authors/${this.currentAuthor.id}/`, this.currentAuthor, {
+        await this.$axios.put(`/api/authors/${this.currentAuthor.id}/`, this.currentAuthor, {
           headers: {
             Authorization: `Token ${token}`
           }});
@@ -557,7 +556,7 @@ export default {
     async deleteAuthor(authorId) {
       try {
         const token = localStorage.getItem('token');
-        await axios.delete(`http://localhost:8000/api/authors/${authorId}/`, {
+        await this.$axios.delete(`/api/authors/${authorId}/`, {
           headers: {
             Authorization: `Token ${token}`
           }});

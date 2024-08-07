@@ -20,35 +20,45 @@
   </q-page>
 </template>
 
-<script setup>
-import { ref } from 'vue';
-import axios from 'axios';
+<script>
 import { Notify } from 'quasar';
 
-const username = ref('');
-const password = ref('');
-
-const login = async (event) => {
-  event.preventDefault();
-  try {
-    const response = await axios.post('http://localhost:8000/api/api-token-auth/', {
-      username: username.value,
-      password: password.value,
-    });
-    localStorage.setItem('token', response.data['token']);
-    window.location.replace('/')
-  } catch (error) {
-    Notify.create({
-          message: 'Login failed, try again.',
+export default {
+  data() {
+    return {
+      username: '',
+      password: ''
+    };
+  },
+  methods: {
+    async login(event) {
+      event.preventDefault();
+      try {
+        const response = await this.$axios.post('/api/api-token-auth/', {
+          username: this.username,
+          password: this.password
+        });
+        localStorage.setItem('token', response.data.token);
+        window.location.replace('/');
+      } catch (error) {
+        let errorMessage = 'Login failed, try again.';
+        if (error.response) {
+          errorMessage = error.response.data.non_field_errors
+            ? error.response.data.non_field_errors.join(' ')
+            : errorMessage;
+        }
+        Notify.create({
+          message: errorMessage,
           color: 'negative',
           position: 'top'
         });
+      }
+    },
+    cancel() {
+      this.username = '';
+      this.password = '';
+    }
   }
-};
-
-const cancel = () => {
-  username.value = '';
-  password.value = '';
 };
 </script>
 
